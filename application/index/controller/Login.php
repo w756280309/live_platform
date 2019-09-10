@@ -3,17 +3,27 @@ namespace app\index\controller;
 require_once __DIR__ . "/../../common/lib/Sms.php";
 use Aliyun\DySDKLite\Sms\Sms;
 use app\common\lib\Util;
+use app\common\lib\Redis;
 class login{
 
     public function index(){
         $phoneNumber = request()->get('phone_num',0,'intval');
         if(empty($phoneNumber)){
-            return Util::show(config('code.error'),'error');
+            return Util::show(config('code.error'),'error','手机号为空！');
         }
         $code = (string)mt_rand(1000,9999);
-        $sendInfo = Sms::sendSms($phoneNumber,$code);
-        if(!empty($sendInfo)){
-            print_r($sendInfo);
+        try{
+            $sendInfo = Sms::sendSms($phoneNumber,$code);
+        }catch (\Exception $e){
+            return Util::show(config('code.error'),'error','阿里短信异常');
+        }
+
+        if($sendInfo->Code === 'OK'){
+            //redis
+            $redis = new \Swoole\Coroutine\Redis();
+            $redis->connect(config('redis.host'),config('redis.port'));
+            $redis->set(Redis::smsKey($phoneNumber),$code , config('redis.out_time'));
+            return Util::show(config('code.success'),'success','成功！');
         }
     }
 
