@@ -7,7 +7,7 @@ class login{
 
     public function index(){
         $phoneNumber = request()->get('phone_num',0,'intval');
-        if(empty($phoneNumber)){
+        if(empty($phoneNumber)){print_r(11111);
             return Util::show(config(code.error),'error');
         }
         $code = (string)mt_rand(1000,9999);
