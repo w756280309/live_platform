@@ -6,8 +6,9 @@ use app\common\lib\Util;
 use app\common\lib\Redis;
 class login{
 
-    public function index(){
-        $phoneNumber = request()->get('phone_num',0,'intval');
+    public function send(){
+        //$phoneNumber = request()->get('phone_num',0,'intval');
+        $phoneNumber = (int)$_GET['phone_num'];
         if(empty($phoneNumber)){
             return Util::show(config('code.error'),'error','手机号为空！');
         }
@@ -24,7 +25,16 @@ class login{
             $redis->connect(config('redis.host'),config('redis.port'));
             $redis->set(Redis::smsKey($phoneNumber),$code , config('redis.out_time'));
             return Util::show(config('code.success'),'success','成功！');
+        }else{
+            return Util::show(config('code.error'),'error','失败！');
         }
+    }
+
+    public function index(){
+        //获取手机号码  验证码
+        $phoneNumber = (int)$_GET['phone_num'];
+        $code = (int)$_GET['code'];
+        //去redis中获取验证码进行验证是否一致
     }
 
 }
