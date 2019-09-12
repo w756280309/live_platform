@@ -7,6 +7,7 @@
  */
 namespace app\common\lib\redis;
 class Predis{
+    //redis的单例模式 静态公有方法来生成对象实例，调用私有构造函数
     public $redis = null;
     private static $_instance = null;
 

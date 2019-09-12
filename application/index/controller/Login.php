@@ -2,6 +2,7 @@
 namespace app\index\controller;
 require_once __DIR__ . "/../../common/lib/Sms.php";
 use Aliyun\DySDKLite\Sms\Sms;
+use app\common\lib\redis\Predis;
 use app\common\lib\Util;
 use app\common\lib\Redis;
 class login{
@@ -34,7 +35,12 @@ class login{
         //获取手机号码  验证码
         $phoneNumber = (int)$_GET['phone_num'];
         $code = (int)$_GET['code'];
+        if(empty($phoneNumber) || empty($code)){
+            return Util::show(config('code.error'),'手机号或者验证码为空！');
+        }
         //去redis中获取验证码进行验证是否一致
+        $redisCode = Predis::getInstance()->get(Redis::smsKey($phoneNumber));
+
     }
 
 }
